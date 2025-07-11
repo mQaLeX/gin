@@ -8,8 +8,8 @@ from .base import GinCfgBase
 from .mockgdb import gdb
 
 class GinLog:
-    std = True
-    log_fn = None
+    __std = True
+    __log_fn = None
 
     def sysfail(e: Exception):
         tb_list = traceback.extract_tb(e.__traceback__)
@@ -32,18 +32,6 @@ class GinLog:
     def info(content: str):
         GinLog._mix_print('INFO', 'blue', content)
 
-    def reg(name: str, value: int):
-        GinLog.info(f'{name}: {value:#x}')
-
-    def addr(name: str, addr: int):
-        GinLog.info(f'{name} addr: {addr:#x}')
-
-    def string(name: str, s: bytes):
-        GinLog.info(f'{name}: {s}')
-    
-    def hexdump(name: str, s: bytes):
-        GinLog.info(f'{name}: {s.hex()}')
-
     def _colored(text, color, bold = False) -> str:
         colors = {
             "default": "0",
@@ -61,12 +49,12 @@ class GinLog:
         return f"{prefix}{color_code}m{text}{suffix}"  
 
     def _console_print(prefix: str, color: str, content: str):
-        if GinLog.std:
+        if GinLog.__std:
             print(f"[{GinLog._colored(prefix, color)}] {content}", file=sys.stderr)
 
     def _file_print(prefix: str, content: str):
-        if GinLog.log_fn is not None:
-            with open(GinLog.log_fn, 'a') as log_f:
+        if GinLog.__log_fn is not None:
+            with open(GinLog.__log_fn, 'a') as log_f:
                 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3]
                 log_f.write(f"{timestamp} - {prefix} - {content}\n")
 
@@ -75,13 +63,13 @@ class GinLog:
         GinLog._file_print(prefix, content)
 
 class GinCfgLog(GinCfgBase):
-    def __init__(self, filename: str = None, std: bool = True):
+    def __init__(self, filename: str = None, console: bool = True):
         super().__init__()
         self.filename = filename
-        self.std = std if filename is not None else True
+        self.console = console if filename is not None else True
     
     def __repr__(self):
-        return f"({self.filename}, {self.std})"
+        return f"({self.filename}, {self.console})"
     
     def required(self):
         x, y = super().required()
@@ -95,6 +83,6 @@ class GinCfgLog(GinCfgBase):
 
     def executed(self):
         rt = super().executed()
-        rt.append(f"GinLog.std = \"{self.std}\"")
-        rt.append(f"GinLog.log_fn = \"{self.filename}\"")
+        rt.append(f"GinLog.__std = \"{self.console}\"")
+        rt.append(f"GinLog.__log_fn = \"{self.filename}\"")
         return rt

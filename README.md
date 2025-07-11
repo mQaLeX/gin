@@ -12,12 +12,18 @@
     - Less manual work
 
 ## Usage
-
 ```python
 def hook():
-    GinLog.reg('rax', GinCtx.rax)
+    GinCtx.regp.rax
 
 gin = Gin.Local(["...", "arg1", "arg2"])
 gin.hook_code(..., hook)
 gin.run()
 ```
+
+## TODO
+- [ ] a global database for user data
+- [ ] ssh/telnet-attach/run mode
+- [ ] module-offset to address
+- [ ] support runtime hook
+- [ ] support array print
