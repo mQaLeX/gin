@@ -15,9 +15,9 @@
 
 ```python
 def hook():
-    GinLog().reg('rax', GinCtx.rax)
+    GinLog.reg('rax', GinCtx.rax)
 
 gin = Gin.Local(["...", "arg1", "arg2"])
-gin.code_hook(..., hook)
+gin.hook_code(..., hook)
 gin.run()
 ```

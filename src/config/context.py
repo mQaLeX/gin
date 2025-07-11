@@ -24,7 +24,7 @@ class Symbol:
         
         symbol = gdb.lookup_global_symbol(name)
         if symbol is None:
-            GinLog().syswarn(f"No symbol {name}")
+            GinLog.syswarn(f"No symbol {name}")
             return None
         
         return int(symbol.value().address)

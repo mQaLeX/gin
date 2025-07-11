@@ -8,10 +8,10 @@ class GinCtrl:
     @staticmethod
     def stop(e: Exception):
         if e is None:
-            GinLog().sysdone()
+            GinLog.sysinfo("Exec done")
             retcode = 0
         else:
-            GinLog().syserror(e)
+            GinLog.sysfail(e)
             retcode = 1
         
         gdb.execute(f"quit {retcode}")

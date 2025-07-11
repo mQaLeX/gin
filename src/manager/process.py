@@ -2,6 +2,8 @@ import subprocess
 from typing import Dict, Set, Tuple, List
 import sys
 
+from ..config.logging import GinLog
+
 class GinProcMgr:
     def __init__(self, gdb_path: str):
         self.head       : List[str] = [gdb_path]
@@ -20,7 +22,7 @@ class GinProcMgr:
 
     def run(self):
         to_run = self._gdb_argv()
-        print(to_run)
+        GinLog.sysinfo(f"gdb command: {to_run}")
         proc: subprocess.Popen = None
         try:
             proc = subprocess.Popen(to_run,

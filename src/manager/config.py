@@ -3,7 +3,7 @@ import tempfile
 from typing import Callable, Dict, List, Set, Tuple
 
 from ..config.base import GinCfgBase, TAB
-from ..config.logging import GinCfgLog
+from ..config.logging import GinCfgLog, GinLog
 from ..config.control import GinCfgCtrl
 
 class GinCfgMgr:
@@ -12,7 +12,12 @@ class GinCfgMgr:
 
         self.config_set: Set[GinCfgBase] = set()
         self.config_list: List[GinCfgBase] = list()
+        
+        self.logger = GinCfgLog()
     
+    def set_log(self, logger: GinCfgLog):
+        self.logger = logger
+
     def add_cfg_item(self, cfg_item: GinCfgBase):
         if cfg_item not in self.config_set:
             self.config_set.add(cfg_item)
@@ -44,7 +49,7 @@ class GinCfgMgr:
                     textwrap.indent('except Exception as e:\n', TAB) + \
                         textwrap.indent('GinCtrl.stop(e)\n', TAB*2)
 
-        for cfg in self.config_list + [self.ctrler]:
+        for cfg in [self.logger] + self.config_list + [self.ctrler]:
             x, y = cfg.required()
             import_set.update(x)
             from_import_dict.update(y)
@@ -53,17 +58,8 @@ class GinCfgMgr:
             executed += cfg.executed()
 
         return py_head() + installed + execute_zone()
-    
-    def _check_necessary(self) -> bool:
-        has_log = False
-        for cfg_item in self.config_list:
-            if isinstance(cfg_item, GinCfgLog):
-                has_log = True
-        return has_log
 
     def gen_py_init(self) -> str:
-        assert self._check_necessary()
-
         with tempfile.NamedTemporaryFile(suffix='_gdbinit.py', mode='w', delete=False) as gdb_init_py:
             gdb_init_py.write(self._gdb_init_py_content())
             return gdb_init_py.name
